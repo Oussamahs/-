@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>مفكرة النجاح اليومية</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Cairo', sans-serif;
+      background: linear-gradient(to right, #fef9f8, #f1f8e9);
+      direction: rtl;
+    }
+    header {
+      background-color: #4caf50;
+      padding: 20px;
+      text-align: center;
+      color: white;
+      border-bottom: 4px solid #388e3c;
+    }
+    .container {
+      max-width: 600px;
+      margin: 30px auto;
+      padding: 20px;
+      background: white;
+      border-radius: 15px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    }
+    h2 {
+      color: #388e3c;
+    }
+    input[type="text"] {
+      width: 100%;
+      padding: 12px;
+      margin: 10px 0;
+      border: 2px solid #c8e6c9;
+      border-radius: 10px;
+      font-size: 16px;
+    }
+    button {
+      padding: 12px 20px;
+      margin-top: 10px;
+      background: #388e3c;
+      color: white;
+      border: none;
+      border-radius: 10px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+    button:hover {
+      background: #2e7d32;
+    }
+    ul {
+      list-style: none;
+      padding: 0;
+    }
+    li {
+      background: #e8f5e9;
+      padding: 10px;
+      margin: 8px 0;
+      border-radius: 8px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    li.done {
+      text-decoration: line-through;
+      background: #c8e6c9;
+      color: #555;
+    }
+    .motivational {
+      margin-top: 25px;
+      padding: 15px;
+      background: #fff3e0;
+      border-left: 6px solid #ff9800;
+      border-radius: 10px;
+      font-style: italic;
+      color: #795548;
+    }
+    .progress {
+      margin-top: 20px;
+      height: 20px;
+      background: #eee;
+      border-radius: 10px;
+      overflow: hidden;
+    }
+    .progress-bar {
+      height: 100%;
+      width: 0;
+      background: #4caf50;
+      text-align: center;
+      color: white;
+      line-height: 20px;
+      font-size: 12px;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>مفكرة النجاح اليومية</h1>
+    <div id="date-time"></div>
+  </header>
+
+  <div class="container">
+    <h2>أهداف اليوم</h2>
+    <input type="text" id="taskInput" placeholder="أدخل مهمة جديدة...">
+    <button onclick="addTask()">إضافة</button>
+    <ul id="taskList"></ul>
+
+    <div class="progress">
+      <div id="progressBar" class="progress-bar">0%</div>
+    </div>
+
+    <div class="motivational" id="motivationQuote">
+      <!-- سيتم عرض عبارة تحفيزية هنا -->
+    </div>
+  </div>
+
+  <script>
+    const tasks = JSON.parse(localStorage.getItem("tasks")) || [];
+    const taskList = document.getElementById("taskList");
+    const progressBar = document.getElementById("progressBar");
+
+    const quotes = [
+      "ابدأ يومك بابتسامة وثقة بالله.",
+      "كل خطوة صغيرة تقربك من حلمك.",
+      "التحديات تصنع الأقوياء.",
+      "اجعل من يومك لوحة نجاح.",
+      "ركز على الإنجاز لا على الكمال."
+    ];
+
+    function updateDateTime() {
+      const now = new Date();
+      document.getElementById("date-time").textContent =
+        now.toLocaleDateString('ar-EG', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }) +
+        " - " + now.toLocaleTimeString('ar-EG');
+    }
+    setInterval(updateDateTime, 1000);
+
+    function renderTasks() {
+      taskList.innerHTML = "";
+      tasks.forEach((task, index) => {
+        const li = document.createElement("li");
+        li.className = task.done ? "done" : "";
+        li.innerHTML = `
+          ${task.text}
+          <button onclick="toggleTask(${index})">✔</button>
+        `;
+        taskList.appendChild(li);
+      });
+      updateProgress();
+      localStorage.setItem("tasks", JSON.stringify(tasks));
+    }
+
+    function addTask() {
+      const input = document.getElementById("taskInput");
+      const text = input.value.trim();
+      if (text !== "") {
+        tasks.push({ text, done: false });
+        input.value = "";
+        renderTasks();
+      }
+    }
+
+    function toggleTask(index) {
+      tasks[index].done = !tasks[index].done;
+      renderTasks();
+    }
+
+    function updateProgress() {
+      const total = tasks.length;
+      const done = tasks.filter(t => t.done).length;
+      const percent = total === 0 ? 0 : Math.round((done / total) * 100);
+      progressBar.style.width = percent + "%";
+      progressBar.textContent = percent + "%";
+    }
+
+    function showRandomQuote() {
+      const quote = quotes[Math.floor(Math.random() * quotes.length)];
+      document.getElementById("motivationQuote").textContent = quote;
+    }
+
+    // تهيئة
+    renderTasks();
+    showRandomQuote();
+    updateDateTime();
+  </script>
+</body>
+</html>
